@@ -23,6 +23,11 @@
 
 /* Keep the frame in NVMM (GPU-accessible) memory all the way to the encoder.
  * If linking fails on your JetPack version, remove "(memory:NVMM)" here. */
+/* White balance: 1 auto (colour varies run to run), 3 fluorescent, 5 daylight, 9 manual */
+#ifndef WBMODE
+#define WBMODE 3
+#endif
+
 #define ENC_CAPS "video/x-raw(memory:NVMM), format=I420"
 
 typedef struct {
@@ -120,7 +125,7 @@ int main(int argc, char *argv[])
     goto cleanup;
 
   /* Camera: stop after NUM_BUFFERS frames */
-  g_object_set(G_OBJECT(src), "num-buffers", NUM_BUFFERS, NULL);
+  g_object_set(G_OBJECT(src), "num-buffers", NUM_BUFFERS, "wbmode", WBMODE, NULL);
 
   /* Fix the capture size so the output resolution is predictable */
   caps_str = g_strdup_printf(

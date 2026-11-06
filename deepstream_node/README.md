@@ -16,5 +16,6 @@ deepstream_node/
 ```
 cd deepstream_test
 make
-./bin/capture_imx219 [output/name.jpg]
+./bin/capture_imx219 [output/name.jpg]   # one frame
+./bin/stream_count [seconds] [out.jpg]    # stream, stop after N seconds, save last frame
 ```
