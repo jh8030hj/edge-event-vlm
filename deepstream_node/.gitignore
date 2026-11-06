@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.engine
+*.onnx
+*.log
+.env
+*.jpg
+.vscode/
+deepstream_test/bin/
