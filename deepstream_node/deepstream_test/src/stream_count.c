@@ -10,15 +10,13 @@
  * Build: make   (from deepstream_test/)
  * Run:   ./bin/stream_count [seconds] [output.jpg]   (default 5, output/stream_last.jpg)
  * Exit:  0 if a JPEG was written, 1 otherwise
- *
- * shortcut: bus_call/make_and_add are copied from capture_imx219.c,
- * extract a common.h when a third pipeline appears.
  */
 #include <gst/gst.h>
 #include <glib/gstdio.h>
 #include <glib-unix.h>
 #include <signal.h>
 #include <stdlib.h>
+#include "common.h"
 
 #define WIDTH  1280
 #define HEIGHT 720
@@ -139,22 +137,6 @@ static gboolean bus_call(GstBus *bus, GstMessage *msg, gpointer data)
       break;
   }
   return TRUE;
-}
-
-/* Create an element and put it in the pipeline right away, so the pipeline
- * owns it and a single unref of the pipeline frees everything. */
-static GstElement *make_and_add(GstElement *pipeline, const gchar *factory, const gchar *name)
-{
-  GstElement *e = gst_element_factory_make(factory, name);
-  if (!e) {
-    g_printerr("Failed to create '%s' (is the %s plugin installed?)\n", name, factory);
-    return NULL;
-  }
-  if (!gst_bin_add(GST_BIN(pipeline), e)) {
-    g_printerr("Failed to add '%s' to the pipeline\n", name);
-    return NULL;
-  }
-  return e;
 }
 
 int main(int argc, char *argv[])

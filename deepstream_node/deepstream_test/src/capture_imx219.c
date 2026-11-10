@@ -12,6 +12,7 @@
  */
 #include <gst/gst.h>
 #include <glib/gstdio.h>
+#include "common.h"
 
 #define NUM_BUFFERS 60 /* skip the first frames: auto exposure needs time to settle */
 
@@ -74,22 +75,6 @@ static GstPadProbeReturn drop_probe(GstPad *pad, GstPadProbeInfo *info, gpointer
   AppData *app = (AppData *)data;
   app->frame_count++;
   return (app->frame_count < NUM_BUFFERS) ? GST_PAD_PROBE_DROP : GST_PAD_PROBE_OK;
-}
-
-/* Create an element and put it in the pipeline right away, so the pipeline
- * owns it and a single unref of the pipeline frees everything. */
-static GstElement *make_and_add(GstElement *pipeline, const gchar *factory, const gchar *name)
-{
-  GstElement *e = gst_element_factory_make(factory, name);
-  if (!e) {
-    g_printerr("Failed to create '%s' (is the %s plugin installed?)\n", name, factory);
-    return NULL;
-  }
-  if (!gst_bin_add(GST_BIN(pipeline), e)) {
-    g_printerr("Failed to add '%s' to the pipeline\n", name);
-    return NULL;
-  }
-  return e;
 }
 
 int main(int argc, char *argv[])

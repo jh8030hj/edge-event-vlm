@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Status
 
-Early stage: one C prototype (`src/capture_imx219.c`) exists. No tests or linter. The git repo is not initialized yet (intended at `workspace/` or `deepstream_node/`).
+Early stage: C prototypes in `src/` (`capture_imx219.c`, `stream_count.c`, `infer_stream.c`). No tests or linter. The git repo is not initialized yet (intended at `workspace/` or `deepstream_node/`).
 
 ## Layout
 
@@ -31,6 +31,8 @@ Prototypes follow DeepStream sample `deepstream-test1`: build elements with `gst
 Both programs set `wbmode` via the `WBMODE` define (default 3, fluorescent; override with `-DWBMODE=n`). Auto (1) gave a magenta cast that changed from run to run; no mode was fully neutral on this IMX219 (3 is the closest, slightly green).
 
 Sensor mode is picked by the first capsfilter (`WIDTH`/`HEIGHT`/`FPS` defines, currently 1280x720@60 = mode 4), not by `sensor-mode`. The combination must exist in the sensor's mode list (IMX219: 3280x2464@21, 3280x1848@28, 1920x1080@30, 1640x1232@30, 1280x720@60) or the pipeline fails to start.
+
+`infer_stream.c` runs a whole-frame TensorRT classifier: `nvarguscamerasrc -> capsfilter -> nvvideoconvert(src-crop center square) -> capsfilter(224x224) -> nvstreammux -> nvinfer -> fakesink`. Model details live in `config/model.txt` (engine, preprocessing, labels), not in the C code. `./bin/infer_stream [seconds] [config]` prints the top class once a second. It links DeepStream (`DS` in the Makefile); shared helper `make_and_add` is in `src/common.h`. Run on the board outside any sandbox: CUDA is needed (`Cuda failure: status=100` means no GPU access).
 
 ## Target environment (Jetson Orin Nano Super, 8GB)
 
