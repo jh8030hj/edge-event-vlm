@@ -17,6 +17,7 @@
 #include <gst/gst.h>
 #include <glib-unix.h>
 #include <signal.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include "gstnvdsmeta.h"
 #include "common.h"
@@ -100,8 +101,10 @@ static GstPadProbeReturn probe(GstPad *pad, GstPadProbeInfo *info, gpointer data
 /* Ctrl-C: leave through cleanup. */
 static gboolean on_sigint(gpointer data)
 {
+  AppData *app = (AppData *)data;
   g_print("\n");
-  g_main_loop_quit(((AppData *)data)->loop);
+  app->success = g_atomic_int_get(&app->frames) > 1;
+  g_main_loop_quit(app->loop);
   return G_SOURCE_REMOVE;
 }
 
@@ -214,12 +217,14 @@ int main(int argc, char *argv[])
   }
   pad = gst_element_get_static_pad(netfilter, "src");
   sinkpad = gst_element_request_pad_simple(mux, "sink_0");
-  if (!sinkpad || gst_pad_link(pad, sinkpad) != GST_PAD_LINK_OK) {
+  gboolean linked = sinkpad && gst_pad_link(pad, sinkpad) == GST_PAD_LINK_OK;
+  gst_object_unref(pad);
+  if (sinkpad)
+    gst_object_unref(sinkpad);
+  if (!linked) {
     g_printerr("Failed to link netfilter to nvstreammux\n");
     goto cleanup;
   }
-  gst_object_unref(pad);
-  gst_object_unref(sinkpad);
   if (!gst_element_link_many(mux, infer, sink, NULL)) {
     g_printerr("Failed to link nvstreammux -> nvinfer -> sink\n");
     goto cleanup;
