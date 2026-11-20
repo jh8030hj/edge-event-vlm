@@ -24,7 +24,7 @@ def load(d):
 
 
 if __name__ == "__main__":
-    m = load(sys.argv[1] if len(sys.argv) > 1 else "resnet_test").cuda()
+    m = load(sys.argv[1] if len(sys.argv) > 1 else "models").cuda()
     x = torch.randn(1, 3, 224, 224, device="cuda")
     with torch.no_grad():
         y = m(x).logits

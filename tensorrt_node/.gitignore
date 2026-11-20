@@ -2,3 +2,4 @@
 *.onnx
 *.engine
 __pycache__/
+*.onnx.data

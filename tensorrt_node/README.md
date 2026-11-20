@@ -18,6 +18,7 @@ Jetson Orin Nano에서 PyTorch 모델을 ONNX로 내보내 TensorRT engine으로
 | torch / torchvision | 2.15.0 / 0.29.2 (+cu132, venv) |
 | transformers / accelerate | 5.22.2 / 1.15.0 (venv) |
 | onnx / onnxscript | 1.23.2 / 0.7.2 (venv) |
+| onnxruntime | 1.32.0 (venv) |
 
 ## 설치
 
@@ -27,7 +28,7 @@ python3.12 -m venv ~/.venvs/torch --system-site-packages
 source ~/.venvs/torch/bin/activate
 python -m pip install --upgrade pip setuptools wheel
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu132
-pip install transformers accelerate onnx onnxscript   # HF 모델 로드 / ONNX 내보내기용
+pip install transformers accelerate onnx onnxscript onnxruntime   # HF 모델 로드 / ONNX 내보내기 / 출력 검증용
 ```
 
 활성화: `source ~/.venvs/torch/bin/activate`, 비활성화: `deactivate`
@@ -45,9 +46,9 @@ print(torch.isnan(x @ x).any().item())   # False면 정상
 
 ## 모델 (Francesco/resnet50-224-1k)
 
-- `resnet_test/`: HF에서 받은 `pytorch_model.bin`, `config.json`, `preprocessor_config.json` (`.bin`은 git 제외).
-- `load_resnet.py`: 구형(transformers 4.17) 체크포인트를 v5에 맞게 키/config를 바꿔 `strict=True`로 로드한다.
-  `python load_resnet.py resnet_test`
+- `resnet_test/models/`: HF에서 받은 `pytorch_model.bin`, `config.json`, `preprocessor_config.json` (`.bin`은 git 제외).
+- `resnet_test/src/load_resnet.py`: 구형(transformers 4.17) 체크포인트를 v5에 맞게 키/config를 바꿔 `strict=True`로 로드한다.
+  `resnet_test/`에서 `python src/load_resnet.py models`
 - 전처리: 256 resize(bicubic) 후 224 center crop, mean `0.485 0.456 0.406`, std `0.229 0.224 0.225`.
 
 ## 참고
