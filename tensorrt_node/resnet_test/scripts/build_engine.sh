@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Usage: ./build_engine.sh [fp16|fp32] [onnx] [engine]
 set -euo pipefail
-cd "$(dirname "$0")"   # models/ paths are relative to resnet_test/
+cd "$(dirname "$0")/.."   # models/ paths are relative to resnet_test/
 
 prec=${1:-fp16}
 onnx=${2:-models/resnet50.onnx}
